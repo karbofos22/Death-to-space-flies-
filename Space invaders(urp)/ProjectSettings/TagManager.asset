@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Obstacle
+  - Projectile
+  - Enemy
+  - TopBorder
+  - Beam
+  - PowerUp
+  - EnemyProjectile
+  - LightFly
+  - HeavyFly
+  - Boss
+  - BossRay
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Ship
+  - Water
+  - UI
+  - Projectile
+  - Obstacle
+  - Border
+  - EnemyProjectile
+  - Enemy
+  - PowerUp
+  - BeamRay
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
