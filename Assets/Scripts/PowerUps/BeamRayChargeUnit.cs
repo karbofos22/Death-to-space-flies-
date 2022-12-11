@@ -1,29 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class BeamRayChargeUnit : MonoBehaviour
 {
-    readonly int powerUpAmount = 35;
-    public int hp = 300;
-
+    #region Fields
+    [SerializeField] private int powerUpAmount = 35;
+    [SerializeField] private int hp = 300;
     private bool hasEntered;
 
-    private BeamRayWeapon beamRay;
-
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
+    [Inject] private BeamRayWeapon beamRay;
+    #endregion
 
     void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
-
         defaultMat = meshRenderer.material;
-
-        beamRay = GameObject.Find("Player").GetComponent<BeamRayWeapon>();
     }
     private void Update()
     {

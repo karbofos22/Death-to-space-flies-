@@ -1,31 +1,52 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 public class PlayerBehaviour : MonoBehaviour
 {
+    #region Fields
     public int hp;
-    public bool isAlive;
+    [SerializeField] private int maxHp = 1300;
+    private readonly int maxDamage = 2000;
+    private WaitForSeconds timeForExplosionAnimation = new(3.6f);
 
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
 
-    private GameManager gameManager;
-    public ParticleSystem explosion;
+    [SerializeField] private ParticleSystem explosion;
+    [SerializeField] private HpBar hpBar;
+    #endregion
+    #region Scripts
+    private LaserWeapons laserWeapons;
+    private BeamRayWeapon beamRay;
+    private PlayerMovement playerMovement;
+    #endregion
 
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        laserWeapons = GetComponent<LaserWeapons>();
+        beamRay = GetComponent<BeamRayWeapon>();
+        playerMovement = GetComponent<PlayerMovement>();
 
         meshRenderer = GetComponent<MeshRenderer>();
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
         defaultMat = meshRenderer.material;
-        hp = 1300;
-        isAlive = true;
+
+        PrimarySetup();
 
         StartCoroutine(Death());
     }
 
     #region Methods
+    private void PrimarySetup()
+    {
+        GlobalEventManager.GameIsActive.AddListener(() =>
+        {
+            hp = maxHp;
+            laserWeapons.enabled = true;
+            beamRay.enabled = true;
+            playerMovement.enabled = true;
+        });
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("EnemyProjectile"))
@@ -45,7 +66,7 @@ public class PlayerBehaviour : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            TakeDamage(2000);
+            TakeDamage(maxDamage);
         }
     }
     private void OnTriggerStay(Collider other)
@@ -63,32 +84,38 @@ public class PlayerBehaviour : MonoBehaviour
         if (hp <= 0)
         {
             explosion.Play();
-            isAlive = false;
         }
         else
         {
             Invoke(nameof(ResetMat), .13f);
         }
     }
+    private void OnDeathControlsKill()
+    {
+        laserWeapons.enabled = false;
+        beamRay.enabled = false;
+        playerMovement.enabled = false;
+    }
     IEnumerator Death()
     {
         yield return new WaitUntil(() => hp <= 0);
 
+        OnDeathControlsKill();
 
-        yield return new WaitForSeconds(3.6f);
-
-        explosion.Stop();
-        Destroy(gameObject);
-        gameManager.isGameActive = false;
-        gameManager.isGameOver = true;
+        yield return timeForExplosionAnimation;
         
+        explosion.Stop();
+
+        GlobalEventManager.SendGameIsOver();
+
+        Destroy(gameObject);
     }
     public void HpRestore(int hpAmount)
     {
         hp += hpAmount;
-        if (hp > 1000)
+        if (hp > maxHp)
         {
-            hp = 1000;
+            hp = maxHp;
         }
     }
     void ResetMat()

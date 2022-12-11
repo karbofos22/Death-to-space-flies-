@@ -1,32 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    #region
     private Rigidbody playerRb;
-    private float steeringMod = 200f;
+    [SerializeField] private float steeringMod = 200f;
 
-    const int border = 42;
+    private readonly int border = 42;
+    #endregion
 
-    private GameManager gameManager;
-    private PlayerBehaviour player;
-    
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
-        player = GetComponent<PlayerBehaviour>();
-
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
-
-    // Update is called once per frame
     void Update()
     {
-        if (gameManager.isGameActive)
-        {
-            Movement();
-        }
+        Movement();
     }
     void Movement()
     {
@@ -39,10 +28,6 @@ public class PlayerMovement : MonoBehaviour
         else if (transform.position.x > border)
         {
             transform.position = new Vector3(border, transform.position.y, transform.position.z);
-        }
-        if (!player.isAlive)
-        {
-            steeringMod = 0;
         }
     }
 }

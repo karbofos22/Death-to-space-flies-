@@ -1,29 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class LaserPowerUp : MonoBehaviour
 {
-    private int hp = 300;
-    const float PowerUpTimeAmount = 30;
+    #region Fields
+    [SerializeField] private int hp = 300;
+    [SerializeField] private float PowerUpTimeAmount = 20;
 
     private bool hasEntered;
+    [Inject] private LaserWeapons laserWeapons;
 
-    private LaserWeapons laserWeapons;
-
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
+    #endregion
 
     void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
-
         defaultMat = meshRenderer.material;
-
-        laserWeapons = GameObject.Find("Player").GetComponent<LaserWeapons>();
     }
     void Update()
     {

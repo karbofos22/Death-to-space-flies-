@@ -1,29 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class HpPowerUp : MonoBehaviour
 {
-    readonly int hpRestoreAmount = 400;
-    private int hp = 300;
+    #region Fields
+    [SerializeField] private int hpRestoreAmount = 350;
+    [SerializeField] private int hp = 300;
 
     private bool hasEntered;
 
-    private PlayerBehaviour player;
-
-    private Material whiteMat;
+    [Inject] private PlayerBehaviour player;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
+    #endregion
 
     void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
-
         defaultMat = meshRenderer.material;
-
-        player = GameObject.Find("Player").GetComponent<PlayerBehaviour>();
     }
     void Update()
     {

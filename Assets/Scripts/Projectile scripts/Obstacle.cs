@@ -4,37 +4,29 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    public int hp = 500;
+    #region Fields
+    [SerializeField] private int hp = 500;
     public const int damageAmount = 45;
 
-    readonly float rotateSpeed = 400f;
+    private readonly float rotateSpeed = 400f;
     private float speed;
     private Rigidbody obstacleRb;
     private Vector3 rotation;
 
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
+    #endregion
 
-    private SpawnManager spawnManager;
-    private GameManager gameManager;
-    
-    private void Awake()
-    {
-        RandomSpeed();
-        RandomRotation();
-    }
     void Start()
     {
         obstacleRb = GetComponent<Rigidbody>();
+
         meshRenderer = GetComponent<MeshRenderer>();
-
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
-
         defaultMat = meshRenderer.material;
 
-        spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        RandomSpeed();
+        RandomRotation();
     }
     void FixedUpdate()
     {
