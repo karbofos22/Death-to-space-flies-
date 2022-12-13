@@ -1,17 +1,16 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserProjectile : MonoBehaviour
 {
+    #region Fields
     private Action<LaserProjectile> _killAction;
 
     private Rigidbody projectileRb;
 
-    //Stats
     public const int damageAmount = 6;
     const float projectileSpeed = 100f;
+    #endregion
 
     void Start()
     {

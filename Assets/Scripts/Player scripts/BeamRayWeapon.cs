@@ -1,34 +1,29 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BeamRayWeapon : MonoBehaviour
 {
-    public GameObject BeamProjectile;
+    #region Fields
+    [SerializeField] private GameObject BeamProjectile;
+    [SerializeField] private BeamLoadingBar beamLoadingBar;
+
+    private float currentBeamChargeValue;
+    private readonly float maxBeamChargeValue = 100;
+    private readonly float beamCost = 0.2f;
+
+    [HideInInspector]
     public bool isLoaded;
-
-    private GameManager gameManager;
-    public BeamLoadingBar beamLoadingBar;
-
-    private float beamChargeProgress;
-    readonly float beamCost = 0.2f;
+    #endregion
 
     private void Start()
     {
-        beamChargeProgress = 0;
-
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        currentBeamChargeValue = 0;
     }
-
-    void Update()
+    private void Update()
     {
-        if (gameManager.isGameActive)
-        {
-            Shoot();
-            BeamStatus();
-        }
+        Shoot();
+        BeamStatus();
     }
-    void Shoot()
+    private void Shoot()
     {
         if (Input.GetButton("Fire2") && isLoaded)
         {
@@ -42,25 +37,25 @@ public class BeamRayWeapon : MonoBehaviour
     }
     public void BeamCharge(float chargeAmount)
     {
-        beamChargeProgress += chargeAmount;
-        if (beamChargeProgress > 100)
+        currentBeamChargeValue += chargeAmount;
+        if (currentBeamChargeValue > maxBeamChargeValue)
         {
-            beamChargeProgress = 100;
+            currentBeamChargeValue = maxBeamChargeValue;
         }
-        beamLoadingBar.SetLoadingStatus(beamChargeProgress);
+        beamLoadingBar.SetLoadingStatus(currentBeamChargeValue);
     }
     public void BeamDischarge(float amount)
     {
-        beamChargeProgress -= amount;
-        beamLoadingBar.SetLoadingStatus(beamChargeProgress);
-        if (beamChargeProgress <= 0)
+        currentBeamChargeValue -= amount;
+        beamLoadingBar.SetLoadingStatus(currentBeamChargeValue);
+        if (currentBeamChargeValue <= 0)
         {
             isLoaded = false;
         }
     }
-    void BeamStatus()
+    private void BeamStatus()
     {
-        if (beamChargeProgress <= 0)
+        if (currentBeamChargeValue <= 0)
         {
             isLoaded = false;
         }

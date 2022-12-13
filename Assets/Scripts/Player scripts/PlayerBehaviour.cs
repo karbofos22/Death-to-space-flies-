@@ -1,40 +1,62 @@
 using System.Collections;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 public class PlayerBehaviour : MonoBehaviour
 {
-    public int hp;
-    public bool isAlive;
+    #region Fields
+    [SerializeField] private int hp;
+    [HideInInspector] public int hpHudValue;
+    [SerializeField] private int maxHp = 1300;
+    private readonly int maxDamage = 2000;
+    private WaitForSeconds timeForExplosionAnimation = new(3.6f);
 
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
 
-    private GameManager gameManager;
-    public ParticleSystem explosion;
+    [SerializeField] private ParticleSystem explosion;
+    [SerializeField] private HpBar hpBar;
+    #endregion
+    #region Scripts
+    private LaserWeapons laserWeapons;
+    private BeamRayWeapon beamRay;
+    private PlayerMovement playerMovement;
+    #endregion
 
-    void Start()
+    private void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        laserWeapons = GetComponent<LaserWeapons>();
+        beamRay = GetComponent<BeamRayWeapon>();
+        playerMovement = GetComponent<PlayerMovement>();
 
         meshRenderer = GetComponent<MeshRenderer>();
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
         defaultMat = meshRenderer.material;
-        hp = 1300;
-        isAlive = true;
+
+        GlobalEventManager.GameIsActive.AddListener(PrimarySetup);
 
         StartCoroutine(Death());
     }
 
     #region Methods
+    private void PrimarySetup()
+    {
+        hp = maxHp;
+        hpHudValue = hp;
+        laserWeapons.enabled = true;
+        beamRay.enabled = true;
+        playerMovement.enabled = true;
+        GlobalEventManager.GameIsActive.RemoveListener(PrimarySetup);
+    }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("EnemyProjectile"))
+        if (other.GetComponent<EnemyProjectile>())
         {
             meshRenderer.material = whiteMat;
             TakeDamage(EnemyProjectile.damageAmount);
             Destroy(other.gameObject);
         }
-        if (other.CompareTag("Obstacle"))
+        if (other.GetComponent<Obstacle>())
         {
             meshRenderer.material = whiteMat;
             TakeDamage(Obstacle.damageAmount);
@@ -45,53 +67,60 @@ public class PlayerBehaviour : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
-            TakeDamage(2000);
+            TakeDamage(maxDamage);
         }
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("BossRay"))
+        if (other.GetComponent<BossRayProjectile>())
         {
             TakeDamage(BossRayProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
     }
+    private void OnDeathControlsKill()
+    {
+        laserWeapons.enabled = false;
+        beamRay.enabled = false;
+        playerMovement.enabled = false;
+    }
+    private IEnumerator Death()
+    {
+        yield return new WaitUntil(() => hp <= 0);
+
+        OnDeathControlsKill();
+
+        yield return timeForExplosionAnimation;
+
+        explosion.Stop();
+
+        GlobalEventManager.SendGameIsOver();
+
+        Destroy(gameObject);
+    }
     public void TakeDamage(int amount)
     {
         hp -= amount;
-
+        hpHudValue = hp;
         if (hp <= 0)
         {
             explosion.Play();
-            isAlive = false;
         }
         else
         {
             Invoke(nameof(ResetMat), .13f);
         }
     }
-    IEnumerator Death()
-    {
-        yield return new WaitUntil(() => hp <= 0);
-
-
-        yield return new WaitForSeconds(3.6f);
-
-        explosion.Stop();
-        Destroy(gameObject);
-        gameManager.isGameActive = false;
-        gameManager.isGameOver = true;
-        
-    }
     public void HpRestore(int hpAmount)
     {
         hp += hpAmount;
-        if (hp > 1000)
+        hpHudValue = hp;
+        if (hp > maxHp)
         {
-            hp = 1000;
+            hp = maxHp;
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }

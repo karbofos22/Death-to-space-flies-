@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 
 public class ObjectPooler : MonoBehaviour
 {
-    public LaserProjectile projectile;
+    [SerializeField] private LaserProjectile projectile;
     public ObjectPool<LaserProjectile> pool;
 
     private void Start()

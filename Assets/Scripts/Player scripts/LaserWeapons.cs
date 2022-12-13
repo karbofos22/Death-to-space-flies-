@@ -1,43 +1,35 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class LaserWeapons : MonoBehaviour
 {
-    public List<GameObject> laserFirePoints;
-    public List<GameObject> powerUpLaserPoints;
+    [SerializeField] private List<GameObject> laserFirePoints;
+    [SerializeField] private List<GameObject> powerUpLaserPoints;
 
-    private ObjectPooler objectPooler;
-    private GameManager gameManager;
+    [Inject] private ObjectPooler objectPooler;
+    [SerializeField] private Image laserPowerUpStatusImage;
 
-    public Image laserPowerUpStatusImage;
+    [HideInInspector] public bool isPowerUpActive;
 
-    [HideInInspector]
-    public bool isPowerUpActive;
+    [HideInInspector] public float laserPowerUpLifeTime;
 
-    [HideInInspector]
-    public float laserPowerUpLifeTime;
-
-    void Start()
+    private void Start()
     {
         laserPowerUpLifeTime = 0;
-
-        objectPooler = GameObject.Find("ObjectPooler").GetComponent<ObjectPooler>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
-
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         StandartFiring();
         LaserPowerUpStatusUpdate();
     }
-    void StandartFiring()
+    private void StandartFiring()
     {
         foreach (var firePoint in laserFirePoints)
         {
-            if (Input.GetButton("Fire1") && gameManager.isGameActive)
+            if (Input.GetButton("Fire1"))
             {
                 var shot = objectPooler.pool.Get();
                 shot.transform.position = firePoint.transform.position;
@@ -49,7 +41,7 @@ public class LaserWeapons : MonoBehaviour
         {
             foreach (var firePoint in powerUpLaserPoints)
             {
-                if (Input.GetButton("Fire1") && gameManager.isGameActive)
+                if (Input.GetButton("Fire1"))
                 {
                     var shot = objectPooler.pool.Get();
                     shot.transform.position = firePoint.transform.position;
@@ -59,7 +51,7 @@ public class LaserWeapons : MonoBehaviour
             }
         }
     }
-    void LaserPowerUpStatusUpdate()
+    private void LaserPowerUpStatusUpdate()
     {
         if (isPowerUpActive)
         {

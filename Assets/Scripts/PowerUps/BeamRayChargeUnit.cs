@@ -1,29 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using Zenject;
 
 public class BeamRayChargeUnit : MonoBehaviour
 {
-    readonly int powerUpAmount = 35;
-    public int hp = 300;
-
+    #region Fields
+    [SerializeField] private int powerUpAmount = 35;
+    [SerializeField] private int hp = 300;
     private bool hasEntered;
 
-    private BeamRayWeapon beamRay;
-
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
+    [Inject] private BeamRayWeapon beamRay;
+    #endregion
 
-    void Start()
+    private void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
-
         defaultMat = meshRenderer.material;
-
-        beamRay = GameObject.Find("Player").GetComponent<BeamRayWeapon>();
     }
     private void Update()
     {
@@ -37,17 +32,17 @@ public class BeamRayChargeUnit : MonoBehaviour
             beamRay.BeamCharge(powerUpAmount);
             Destroy(gameObject);
         }
-        if (other.CompareTag("Projectile"))
+        if (other.GetComponent<LaserProjectile>())
         {
             TakeDamage(LaserProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
-        if (other.CompareTag("EnemyProjectile"))
+        if (other.GetComponent<EnemyProjectile>())
         {
             TakeDamage(EnemyProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
-        if (other.CompareTag("Obstacle"))
+        if (other.GetComponent<Obstacle>())
         {
             TakeDamage(Obstacle.damageAmount);
             meshRenderer.material = whiteMat;
@@ -55,7 +50,7 @@ public class BeamRayChargeUnit : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Beam"))
+        if (other.GetComponent<BeamProjectile>())
         {
             TakeDamage(BeamProjectile.damageAmount);
             meshRenderer.material = whiteMat;
@@ -73,7 +68,7 @@ public class BeamRayChargeUnit : MonoBehaviour
             Invoke(nameof(ResetMat), .15f);
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }

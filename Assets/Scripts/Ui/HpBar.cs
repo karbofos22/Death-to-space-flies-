@@ -1,24 +1,23 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class HpBar : MonoBehaviour
 {
-    public Slider slider;
+    [SerializeField]private Slider slider;
+    [Inject] private PlayerBehaviour player;
 
-    private PlayerBehaviour player;
-
-    void Start()
+    private void Start()
     {
-        player = GameObject.Find("Player").GetComponent<PlayerBehaviour>();
-
-        slider.maxValue = player.hp;
+        slider.maxValue = player.hpHudValue;
         slider.value = slider.maxValue;
     }
     private void Update()
     {
-        UpdateHp(player.hp);
+       UpdateHp(player.hpHudValue);
     }
-    void UpdateHp(float amount)
+
+    public void UpdateHp(float amount)
     {
         slider.value = amount;
     }
