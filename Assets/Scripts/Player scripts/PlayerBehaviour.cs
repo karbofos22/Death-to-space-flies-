@@ -1,10 +1,12 @@
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 public class PlayerBehaviour : MonoBehaviour
 {
     #region Fields
-    public int hp;
+    [SerializeField] private int hp;
+    [HideInInspector] public int hpHudValue;
     [SerializeField] private int maxHp = 1300;
     private readonly int maxDamage = 2000;
     private WaitForSeconds timeForExplosionAnimation = new(3.6f);
@@ -22,7 +24,7 @@ public class PlayerBehaviour : MonoBehaviour
     private PlayerMovement playerMovement;
     #endregion
 
-    void Start()
+    private void Start()
     {
         laserWeapons = GetComponent<LaserWeapons>();
         beamRay = GetComponent<BeamRayWeapon>();
@@ -31,7 +33,7 @@ public class PlayerBehaviour : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         defaultMat = meshRenderer.material;
 
-        PrimarySetup();
+        GlobalEventManager.GameIsActive.AddListener(PrimarySetup);
 
         StartCoroutine(Death());
     }
@@ -39,23 +41,22 @@ public class PlayerBehaviour : MonoBehaviour
     #region Methods
     private void PrimarySetup()
     {
-        GlobalEventManager.GameIsActive.AddListener(() =>
-        {
-            hp = maxHp;
-            laserWeapons.enabled = true;
-            beamRay.enabled = true;
-            playerMovement.enabled = true;
-        });
+        hp = maxHp;
+        hpHudValue = hp;
+        laserWeapons.enabled = true;
+        beamRay.enabled = true;
+        playerMovement.enabled = true;
+        GlobalEventManager.GameIsActive.RemoveListener(PrimarySetup);
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("EnemyProjectile"))
+        if (other.GetComponent<EnemyProjectile>())
         {
             meshRenderer.material = whiteMat;
             TakeDamage(EnemyProjectile.damageAmount);
             Destroy(other.gameObject);
         }
-        if (other.CompareTag("Obstacle"))
+        if (other.GetComponent<Obstacle>())
         {
             meshRenderer.material = whiteMat;
             TakeDamage(Obstacle.damageAmount);
@@ -71,16 +72,36 @@ public class PlayerBehaviour : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("BossRay"))
+        if (other.GetComponent<BossRayProjectile>())
         {
             TakeDamage(BossRayProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
     }
+    private void OnDeathControlsKill()
+    {
+        laserWeapons.enabled = false;
+        beamRay.enabled = false;
+        playerMovement.enabled = false;
+    }
+    private IEnumerator Death()
+    {
+        yield return new WaitUntil(() => hp <= 0);
+
+        OnDeathControlsKill();
+
+        yield return timeForExplosionAnimation;
+
+        explosion.Stop();
+
+        GlobalEventManager.SendGameIsOver();
+
+        Destroy(gameObject);
+    }
     public void TakeDamage(int amount)
     {
         hp -= amount;
-
+        hpHudValue = hp;
         if (hp <= 0)
         {
             explosion.Play();
@@ -90,35 +111,16 @@ public class PlayerBehaviour : MonoBehaviour
             Invoke(nameof(ResetMat), .13f);
         }
     }
-    private void OnDeathControlsKill()
-    {
-        laserWeapons.enabled = false;
-        beamRay.enabled = false;
-        playerMovement.enabled = false;
-    }
-    IEnumerator Death()
-    {
-        yield return new WaitUntil(() => hp <= 0);
-
-        OnDeathControlsKill();
-
-        yield return timeForExplosionAnimation;
-        
-        explosion.Stop();
-
-        GlobalEventManager.SendGameIsOver();
-
-        Destroy(gameObject);
-    }
     public void HpRestore(int hpAmount)
     {
         hp += hpAmount;
+        hpHudValue = hp;
         if (hp > maxHp)
         {
             hp = maxHp;
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }

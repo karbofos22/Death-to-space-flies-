@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using Zenject;
 
@@ -14,7 +15,7 @@ public class BeamRayChargeUnit : MonoBehaviour
     [Inject] private BeamRayWeapon beamRay;
     #endregion
 
-    void Start()
+    private void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         defaultMat = meshRenderer.material;
@@ -31,17 +32,17 @@ public class BeamRayChargeUnit : MonoBehaviour
             beamRay.BeamCharge(powerUpAmount);
             Destroy(gameObject);
         }
-        if (other.CompareTag("Projectile"))
+        if (other.GetComponent<LaserProjectile>())
         {
             TakeDamage(LaserProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
-        if (other.CompareTag("EnemyProjectile"))
+        if (other.GetComponent<EnemyProjectile>())
         {
             TakeDamage(EnemyProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
-        if (other.CompareTag("Obstacle"))
+        if (other.GetComponent<Obstacle>())
         {
             TakeDamage(Obstacle.damageAmount);
             meshRenderer.material = whiteMat;
@@ -49,7 +50,7 @@ public class BeamRayChargeUnit : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Beam"))
+        if (other.GetComponent<BeamProjectile>())
         {
             TakeDamage(BeamProjectile.damageAmount);
             meshRenderer.material = whiteMat;
@@ -67,7 +68,7 @@ public class BeamRayChargeUnit : MonoBehaviour
             Invoke(nameof(ResetMat), .15f);
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }

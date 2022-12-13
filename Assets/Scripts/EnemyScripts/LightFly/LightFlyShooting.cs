@@ -25,7 +25,7 @@ public class LightFlyShooting : MonoBehaviour
     private void Start()
     {
         isCanShoot = true;
-        AddGameOverListener();
+        GlobalEventManager.GameOver.AddListener(StopShootingIfGameOver);
     }
 
     private void Update()
@@ -39,15 +39,7 @@ public class LightFlyShooting : MonoBehaviour
     }
 
     #region Methods
-    private void AddGameOverListener()
-    {
-        GlobalEventManager.GameOver.AddListener(() =>
-        {
-            isCanShoot = false;
-        });
-    }
-
-    void Shoot()
+    private void Shoot()
     {
         if (Time.time > fireRate + nextShot)
         {
@@ -65,6 +57,11 @@ public class LightFlyShooting : MonoBehaviour
         {
             isCanShoot = false;
         }
+    }
+    private void StopShootingIfGameOver()
+    {
+        isCanShoot = false;
+        GlobalEventManager.GameOver.RemoveListener(StopShootingIfGameOver);
     }
     private void FindTarget()
     {

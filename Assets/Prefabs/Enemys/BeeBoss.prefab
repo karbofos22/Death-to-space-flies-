@@ -359,6 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad5f349402332794dbcf9402925cb9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hp: 0
   bloodParticle: {fileID: 7514318220681529832}
 --- !u!65 &1683045153725184903
 BoxCollider:
@@ -385,6 +386,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9688b6b59a95ce049bc65914c07b0334, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 3
+  strafeSpeed: 3
+  strafeDelta: 12.4
+  isCanStrafe: 0
 --- !u!114 &-8056221007599310562
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,7 +403,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fireRate: 3
-  laserRayActive: 0
   projectileRb: {fileID: -6848872936323834703, guid: e61e02e8035e089428ab6b83a5f7f1af, type: 3}
   rayProjectile: {fileID: 1216635240182454864}
   firePoints:
@@ -482,6 +486,18 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4644107988730558648, guid: 4b1c7225d6a5a3c4d963107097bf855d, type: 3}
   m_PrefabInstance: {fileID: 5805549840596902632}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1049424369410022254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1216635240182454864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd6208a1ddcefd94da18080690fabc6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1216635240182454865 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4644107988730558649, guid: 4b1c7225d6a5a3c4d963107097bf855d, type: 3}

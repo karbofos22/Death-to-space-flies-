@@ -8,7 +8,7 @@ public class BeeBossShooting : MonoBehaviour
     [SerializeField] private float fireRate = 3f;
     private float nextShot;
     private Vector3 shootPoint;
-    public bool laserRayActive;
+    private bool laserRayActive;
     private bool isCanShoot;
     #endregion
 
@@ -21,8 +21,9 @@ public class BeeBossShooting : MonoBehaviour
     void Start()
     {
         isCanShoot = true;
+        laserRayActive = true;
 
-        AddGameOverListener();
+        GlobalEventManager.GameOver.AddListener(StopShootingIfGameOver);
         StartCoroutine(LaserRayShoot());
     }
     void Update()
@@ -33,13 +34,6 @@ public class BeeBossShooting : MonoBehaviour
         }
     }
     #region Methods
-    private void AddGameOverListener()
-    {
-        GlobalEventManager.GameOver.AddListener(() =>
-        {
-            isCanShoot = false;
-        });
-    }
     IEnumerator LaserRayShoot()
     {
         yield return new WaitUntil(() => laserRayActive);
@@ -77,6 +71,15 @@ public class BeeBossShooting : MonoBehaviour
     Vector3 PlayerPos()
     {
         return GameObject.Find("Player").transform.position;
+    }
+    private void StopShootingIfGameOver()
+    {
+        isCanShoot = false;
+        GlobalEventManager.GameOver.RemoveListener(StopShootingIfGameOver);
+    }
+    private void OnDisable()
+    {
+        StopCoroutine(LaserRayShoot());
     }
     #endregion
 }

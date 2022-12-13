@@ -1,9 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public interface IEnemy
 {
-    int Hp { get; set; }
-    int ScoreValue { get; set; }
+    private int Hp
+    {
+        get
+        {
+            return Hp;
+        }
+        set
+        {
+            Hp = value;
+        }
+    }
+
+    int ScoreValue
+    {
+        get
+        {
+            return ScoreValue;
+        }
+        set
+        {
+            ScoreValue = value;
+        }
+    }
 }

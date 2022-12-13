@@ -13,7 +13,7 @@ public class SpawnManager : MonoBehaviour
     private int laserSpawnChance;
     private bool isCanSpawn;
     private bool isBossTime;
-    
+
 
     [Header("Obstacles")]
     public List<Rigidbody> asteroids;
@@ -45,10 +45,10 @@ public class SpawnManager : MonoBehaviour
         isCanSpawn = false;
         isBossTime = false;
 
-        AddGameActiveListener();
-        AddBossIncomingListener();
-        AddGameOverListener();
-        AddBossDeadListener();
+        GlobalEventManager.GameIsActive.AddListener(GameActive);
+        GlobalEventManager.BossIncoming.AddListener(BossIncoming);
+        GlobalEventManager.GameOver.AddListener(GameOver);
+        GlobalEventManager.BossDead.AddListener(BossDefeated);
 
         InvokeRepeating(nameof(SpawnLaserPowerUp), 1, 10);
         InvokeRepeating(nameof(SpawnBeamChargePowerUp), 1, 9);
@@ -63,38 +63,24 @@ public class SpawnManager : MonoBehaviour
         GetPlayerPos();
         SpawnChanceRandom();
     }
-    #region Listeners
-    private void AddGameActiveListener()
-    {
-        GlobalEventManager.GameIsActive.AddListener(() =>
-        {
-            isCanSpawn = true;
-        });
-    }
-    private void AddBossIncomingListener()
-    {
-        GlobalEventManager.BossIncoming.AddListener(() =>
-        {
-            SpawnBoss();
-        });
-    }
-    private void AddGameOverListener()
-    {
-        GlobalEventManager.GameOver.AddListener(() =>
-        {
-            isCanSpawn = false;
-        });
-    }
-    private void AddBossDeadListener()
-    {
-        GlobalEventManager.BossDead.AddListener(() =>
-        {
-            isBossTime = false;
-        });
-    }
-    #endregion
 
     #region Methods
+    private void GameActive()
+    {
+        isCanSpawn = true;
+    }
+    private void BossIncoming()
+    {
+        SpawnBoss();
+    }
+    private void GameOver()
+    {
+        isCanSpawn = false;
+    }
+    private void BossDefeated()
+    {
+        isBossTime = false;
+    }
     private void SpawnObstacle()
     {
         if (isCanSpawn)

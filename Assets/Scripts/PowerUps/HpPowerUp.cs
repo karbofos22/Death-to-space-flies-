@@ -15,12 +15,12 @@ public class HpPowerUp : MonoBehaviour
     private MeshRenderer meshRenderer;
     #endregion
 
-    void Start()
+    private void Start()
     {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         defaultMat = meshRenderer.material;
     }
-    void Update()
+    private void Update()
     {
         transform.Translate(Vector3.back * 0.04f);
     }
@@ -32,17 +32,17 @@ public class HpPowerUp : MonoBehaviour
             player.HpRestore(hpRestoreAmount);
             Destroy(gameObject);
         }
-        if (other.CompareTag("Projectile"))
+        if (other.GetComponent<LaserProjectile>())
         {
             TakeDamage(LaserProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
-        if (other.CompareTag("EnemyProjectile"))
+        if (other.GetComponent<EnemyProjectile>())
         {
             TakeDamage(EnemyProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
-        if (other.CompareTag("Obstacle"))
+        if (other.GetComponent<Obstacle>())
         {
             TakeDamage(Obstacle.damageAmount);
             meshRenderer.material = whiteMat;
@@ -50,13 +50,13 @@ public class HpPowerUp : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Beam"))
+        if (other.GetComponent<BeamProjectile>())
         {
             TakeDamage(BeamProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
     }
-    public void TakeDamage(int amount)
+    private void TakeDamage(int amount)
     {
         hp -= amount;
         if (hp <= 0)
@@ -68,7 +68,7 @@ public class HpPowerUp : MonoBehaviour
             Invoke(nameof(ResetMat), .15f);
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }

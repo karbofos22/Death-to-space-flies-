@@ -11,19 +11,19 @@ public class LightFlyMovement : MonoBehaviour
     private Vector3 destroyerPos = new(-1.8452f, 0, -134.2f);
     #endregion
 
-    void Start()
+    private void Start()
     {
         startPosX = transform.position;
     }
-    void Update()
+    private void Update()
     {
         Movement();
     }
-    void Movement()
+    private void Movement()
     {
         transform.position = Vector3.MoveTowards(StrafeByX(), destroyerPos, moveSpeed * Time.deltaTime);
     }
-    Vector3 StrafeByX()
+    private Vector3 StrafeByX()
     {
         Vector3 v = startPosX;
         v.x += strafeDelta * Mathf.Sin(Time.time * strafeSpeed);

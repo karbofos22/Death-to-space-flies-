@@ -20,23 +20,18 @@ public class UiManager : MonoBehaviour
     private void Start()
     {
         bossIncoming = false;
-        AddBossTimeListener();
-        AddBossFightListener();
+        GlobalEventManager.BossIncoming.AddListener(BossTime);
+        GlobalEventManager.BossReadyToFight.AddListener(BossIsReadyToFight);
+        BossIsReadyToFight();
         StartCoroutine(BossIncomingText());
     }
-    private void AddBossTimeListener()
+    private void BossTime()
     {
-        GlobalEventManager.BossIncoming.AddListener(() =>
-        {
-            bossIncoming = true;
-        });
+        bossIncoming = true;
     }
-    private void AddBossFightListener()
+    private void BossIsReadyToFight()
     {
-        GlobalEventManager.BossFight.AddListener(() =>
-        {
-            bossIncoming = false;
-        });
+        bossIncoming = false;
     }
     public void ShowTutorialScreen()
     {

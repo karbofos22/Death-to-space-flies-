@@ -7,9 +7,8 @@ public class GlobalEventManager
     public static UnityEvent GameIsActive = new();
     public static UnityEvent GameOver = new();
     public static UnityEvent BossIncoming = new();
-    public static UnityEvent BossFight = new();
+    public static UnityEvent BossReadyToFight = new();
     public static UnityEvent BossDead = new();
-
 
     public static void SendEnemyKilled(int scoreAmount)
     {
@@ -27,9 +26,9 @@ public class GlobalEventManager
     {
         BossIncoming.Invoke();
     }
-    public static void SendBossFight()
+    public static void SendBossReadyToFight()
     {
-        BossFight.Invoke();
+        BossReadyToFight.Invoke();
     }
     public static void SendBossDead()
     {

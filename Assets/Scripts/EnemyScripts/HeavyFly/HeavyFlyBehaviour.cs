@@ -5,28 +5,31 @@ using UnityEngine;
 public class HeavyFlyBehaviour : MonoBehaviour, IEnemy
 {
     #region Fields
-    public ParticleSystem bloodParticle;
+    [SerializeField] private ParticleSystem bloodParticle;
+    private readonly int emissionParticleToEmit = 240;
     private bool gotPoints;
+    [SerializeField] private int hp = 850;
+    private readonly int hpLowerLimit = 100;
+    [SerializeField] private int scoreValue = 200;
     #endregion
 
     #region Properties
-    public int Hp { get; set; }
-    public int ScoreValue { get; set; }
+    public int Hp { get; private set; }
+    public int ScoreValue { get; private set; }
     #endregion
 
     void Start()
     {
-        Hp = 850;
-        ScoreValue = 200;
+        Hp = hp;
+        ScoreValue = scoreValue;
     }
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Projectile"))
+        if (other.GetComponent<LaserProjectile>())
         {
             TakeDamage(LaserProjectile.damageAmount);
         }
-        if (other.CompareTag("Obstacle"))
+        if (other.GetComponent<Obstacle>())
         {
             TakeDamage(Obstacle.damageAmount);
             Destroy(other.gameObject);
@@ -34,7 +37,7 @@ public class HeavyFlyBehaviour : MonoBehaviour, IEnemy
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Beam"))
+        if (other.GetComponent<BeamProjectile>())
         {
             TakeDamage(BeamProjectile.damageAmount);
         }
@@ -42,9 +45,9 @@ public class HeavyFlyBehaviour : MonoBehaviour, IEnemy
     public void TakeDamage(int amount)
     {
         Hp -= amount;
-        if (Hp < 100)
+        if (Hp < hpLowerLimit)
         {
-            bloodParticle.Emit(240);
+            bloodParticle.Emit(emissionParticleToEmit);
         }
         if (Hp <= 0 && !gotPoints)
         {

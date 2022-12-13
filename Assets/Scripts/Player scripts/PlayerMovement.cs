@@ -9,15 +9,15 @@ public class PlayerMovement : MonoBehaviour
     private readonly int border = 42;
     #endregion
 
-    void Start()
+    private void Start()
     {
         playerRb = GetComponent<Rigidbody>();
     }
-    void Update()
+    private void Update()
     {
         Movement();
     }
-    void Movement()
+    private void Movement()
     {
         playerRb.velocity = new Vector3(Input.GetAxis("Horizontal") * steeringMod, 0);
 

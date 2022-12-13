@@ -374,6 +374,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bloodParticle: {fileID: 4099917554817239037}
+  hp: 850
+  scoreValue: 200
 --- !u!114 &8624579352398807652
 MonoBehaviour:
   m_ObjectHideFlags: 0

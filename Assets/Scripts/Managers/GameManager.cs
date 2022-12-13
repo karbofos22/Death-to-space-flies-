@@ -17,41 +17,33 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool isGameActive;
 
     private int scores;
-    [SerializeField] private int bossScores = 1000;
+    [SerializeField] private int bossScores = 20000;
     [SerializeField] private UiManager uiManager;
     private bool isBossTime;
     #endregion
 
     private void Start()
     {
-        AddScoresListener();
-        AddGameOverListener();
+        GlobalEventManager.GameOver.AddListener(GameOver);
+        GlobalEventManager.OnEnemyKilled.AddListener(AddScores);
     }
     private void Update()
     {
         BossSpawnConditions();
         ShowCursor();
     }
-    #region Listeners
-    private void AddScoresListener()
-    {
-        GlobalEventManager.OnEnemyKilled.AddListener(scoreAmount =>
-        {
-            scores += scoreAmount;
-        });
-    }
-    private void AddGameOverListener()
-    {
-        GlobalEventManager.GameOver.AddListener(() =>
-        {
-            uiManager.GameOverScreenChange();
-            isGameActive = false;
-        });
-    }
-    #endregion
 
     #region Methods
-    
+    private void AddScores(int scoreAmount)
+    {
+        scores += scoreAmount;
+    }
+    private void GameOver()
+    {
+        uiManager.GameOverScreenChange();
+        isGameActive = false;
+
+    }
     private void BossSpawnConditions()
     {
         if (scores >= bossScores && !isBossTime)
@@ -60,7 +52,7 @@ public class GameManager : MonoBehaviour
             GlobalEventManager.SendBossIncoming();
         }
     }
-    
+
     public void GameStart()
     {
         uiManager.GameStartScreenChange();
@@ -70,6 +62,7 @@ public class GameManager : MonoBehaviour
     public void GameRestart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        GlobalEventManager.GameOver.RemoveAllListeners();
         uiManager.GameRestartScreenChange();
     }
     private void ShowCursor()

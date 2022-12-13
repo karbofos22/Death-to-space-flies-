@@ -24,7 +24,7 @@ public class HeavyFlyShooting : MonoBehaviour
     private void Start()
     {
         isCanShoot = true;
-        AddGameOverListener();
+        GlobalEventManager.GameOver.AddListener(StopShootingIfGameOver);
     }
     private void Update()
     {
@@ -37,13 +37,6 @@ public class HeavyFlyShooting : MonoBehaviour
     }
 
     #region Methods
-    private void AddGameOverListener()
-    {
-        GlobalEventManager.GameOver.AddListener(() =>
-        {
-            isCanShoot = false;
-        });
-    }
     private void Shoot()
     {
         if (Time.time > fireRate + nextShot)
@@ -78,6 +71,11 @@ public class HeavyFlyShooting : MonoBehaviour
     private Vector3 PlayerPos()
     {
         return GameObject.Find("Player").transform.position;
+    }
+    private void StopShootingIfGameOver()
+    {
+        isCanShoot = false;
+        GlobalEventManager.GameOver.RemoveListener(StopShootingIfGameOver);
     }
     #endregion
 }

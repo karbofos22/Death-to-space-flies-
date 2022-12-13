@@ -18,7 +18,7 @@ public class Obstacle : MonoBehaviour
     private MeshRenderer meshRenderer;
     #endregion
 
-    void Start()
+    private void Start()
     {
         obstacleRb = GetComponent<Rigidbody>();
 
@@ -28,13 +28,13 @@ public class Obstacle : MonoBehaviour
         RandomSpeed();
         RandomRotation();
     }
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         Behaviour();
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Projectile"))
+        if (other.GetComponent<LaserProjectile>())
         {
             TakeDamage(LaserProjectile.damageAmount);
             meshRenderer.material = whiteMat;
@@ -42,22 +42,22 @@ public class Obstacle : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Beam"))
+        if (other.GetComponent<BeamProjectile>())
         {
             TakeDamage(BeamProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
     }
-    void RandomSpeed()
+    private void RandomSpeed()
     {
         speed = Random.Range(10, 21);
     }
-    void RandomRotation()
+    private void RandomRotation()
     {
         Vector3[] rotationDir = new Vector3[] { Vector3.up, Vector3.forward, Vector3.right, Vector3.left, Vector3.back, Vector3.down };
         rotation = rotationDir[Random.Range(0, rotationDir.Length)];
     }
-    void Behaviour()
+    private void Behaviour()
     {
         obstacleRb.AddTorque(rotation * rotateSpeed);
         obstacleRb.AddForce(Vector3.back * speed);
@@ -66,7 +66,7 @@ public class Obstacle : MonoBehaviour
             obstacleRb.velocity = obstacleRb.velocity.normalized * speed;
         }
     }
-    public void TakeDamage(int amount)
+    private void TakeDamage(int amount)
     {
         hp -= amount;
         if (hp <= 0)
@@ -78,7 +78,7 @@ public class Obstacle : MonoBehaviour
             Invoke(nameof(ResetMat), .15f);
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }

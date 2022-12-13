@@ -12,22 +12,20 @@ public class LaserWeapons : MonoBehaviour
     [Inject] private ObjectPooler objectPooler;
     [SerializeField] private Image laserPowerUpStatusImage;
 
-    [HideInInspector]
-    public bool isPowerUpActive;
+    [HideInInspector] public bool isPowerUpActive;
 
-    [HideInInspector]
-    public float laserPowerUpLifeTime;
+    [HideInInspector] public float laserPowerUpLifeTime;
 
-    void Start()
+    private void Start()
     {
         laserPowerUpLifeTime = 0;
     }
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         StandartFiring();
         LaserPowerUpStatusUpdate();
     }
-    void StandartFiring()
+    private void StandartFiring()
     {
         foreach (var firePoint in laserFirePoints)
         {
@@ -53,7 +51,7 @@ public class LaserWeapons : MonoBehaviour
             }
         }
     }
-    void LaserPowerUpStatusUpdate()
+    private void LaserPowerUpStatusUpdate()
     {
         if (isPowerUpActive)
         {

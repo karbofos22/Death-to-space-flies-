@@ -9,12 +9,12 @@ public class HpBar : MonoBehaviour
 
     private void Start()
     {
-        slider.maxValue = player.hp;
+        slider.maxValue = player.hpHudValue;
         slider.value = slider.maxValue;
     }
     private void Update()
     {
-        UpdateHp(player.hp);
+       UpdateHp(player.hpHudValue);
     }
 
     public void UpdateHp(float amount)

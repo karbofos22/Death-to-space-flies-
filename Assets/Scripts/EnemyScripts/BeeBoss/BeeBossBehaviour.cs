@@ -1,30 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BeeBossBehaviour : MonoBehaviour, IEnemy
 {
     #region Fields
     [SerializeField] private int hp;
     private bool isActive;
-    public ParticleSystem bloodParticle;
-    private readonly int immortality = 1000000;
+    private bool gotPoints;
+    [SerializeField] private ParticleSystem bloodParticle;
+    private readonly int emissionParticleToEmit = 400;
+    private readonly int properHp = 9500;
+    private readonly int hpLowerLimit = 500;
+    private readonly int immortality = 1000000; // To easy up, temporary immortality implemented via massive Hp number
+    private readonly int bossScoreValue = 20000;
     #endregion
 
     #region Properties
     public int Hp
     {
         get { return hp; }
-        set { hp = value; }
+        private set { hp = value; }
     }
-    public int ScoreValue { get; set; }
+    public int ScoreValue { get; private set; }
     #endregion
 
     #region Scripts
     private BeeBossMovement bossMovement;
     private BeeBossShooting bossShooting;
     #endregion
-
     void Awake()
     {
         bossMovement = GetComponent<BeeBossMovement>();
@@ -35,23 +40,20 @@ public class BeeBossBehaviour : MonoBehaviour, IEnemy
     void Start()
     {
         Hp = immortality;
-        ScoreValue = 20000;
+        ScoreValue = bossScoreValue;
 
-        PrimarySetup();
+        GlobalEventManager.BossReadyToFight.AddListener(PrimarySetup);
     }
     #region Methods
     private void PrimarySetup()
     {
-        GlobalEventManager.BossFight.AddListener(() =>
+        if (!isActive)
         {
-            if (!isActive)
-            {
-                Hp = 9500;
-                isActive = true;
-                bossShooting.enabled = true;
-                bossShooting.laserRayActive = true;
-            }
-        });
+            Hp = properHp;
+            isActive = true;
+            bossShooting.enabled = true;
+            GlobalEventManager.BossReadyToFight.RemoveListener(PrimarySetup);
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -72,12 +74,14 @@ public class BeeBossBehaviour : MonoBehaviour, IEnemy
     public void TakeDamage(int amount)
     {
         Hp -= amount;
-        if (Hp < 500)
+        if (Hp < hpLowerLimit)
         {
-            bloodParticle.Emit(400);
+            bloodParticle.Emit(emissionParticleToEmit);
         }
-        if (Hp <= 0)
+        if (Hp <= 0 && !gotPoints)
         {
+            gotPoints = true;
+            GlobalEventManager.SendEnemyKilled(ScoreValue);
             GlobalEventManager.SendBossDead();
             Destroy(gameObject);
         }

@@ -18,12 +18,12 @@ public class BeamRayWeapon : MonoBehaviour
     {
         currentBeamChargeValue = 0;
     }
-    void Update()
+    private void Update()
     {
         Shoot();
         BeamStatus();
     }
-    void Shoot()
+    private void Shoot()
     {
         if (Input.GetButton("Fire2") && isLoaded)
         {
@@ -53,7 +53,7 @@ public class BeamRayWeapon : MonoBehaviour
             isLoaded = false;
         }
     }
-    void BeamStatus()
+    private void BeamStatus()
     {
         if (currentBeamChargeValue <= 0)
         {
