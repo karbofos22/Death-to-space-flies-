@@ -1,4 +1,4 @@
-# Space-Defender
+# Death to space flies
 Unity pet project for educational purposes
 
 
