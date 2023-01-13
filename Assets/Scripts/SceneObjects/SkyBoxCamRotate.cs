@@ -2,11 +2,9 @@ using UnityEngine;
 
 public class SkyBoxCamRotate : MonoBehaviour
 {
-        public const string Horizontal = "Horizontal";
-
-    void Update()
+    private readonly float rotateSpeed = -0.006f;
+    private void Update()
     {
-        float speed = Input.GetAxisRaw(Horizontal) * 1f;
-        transform.Rotate(-0.006f, 0, 0);
+        transform.Rotate(rotateSpeed, 0, 0);
     }
 }

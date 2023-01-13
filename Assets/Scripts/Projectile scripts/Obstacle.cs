@@ -4,45 +4,37 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    public int hp = 500;
+    #region Fields
+    [SerializeField] private int hp = 500;
     public const int damageAmount = 45;
 
-    readonly float rotateSpeed = 400f;
+    private readonly float rotateSpeed = 400f;
     private float speed;
     private Rigidbody obstacleRb;
     private Vector3 rotation;
 
-    private Material whiteMat;
+    [SerializeField] private Material whiteMat;
     private Material defaultMat;
-    MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer;
+    #endregion
 
-    private SpawnManager spawnManager;
-    private GameManager gameManager;
-    
-    private void Awake()
+    private void Start()
     {
+        obstacleRb = GetComponent<Rigidbody>();
+
+        meshRenderer = GetComponent<MeshRenderer>();
+        defaultMat = meshRenderer.material;
+
         RandomSpeed();
         RandomRotation();
     }
-    void Start()
-    {
-        obstacleRb = GetComponent<Rigidbody>();
-        meshRenderer = GetComponent<MeshRenderer>();
-
-        whiteMat = Resources.Load("WhiteFlash", typeof(Material)) as Material;
-
-        defaultMat = meshRenderer.material;
-
-        spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-    }
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         Behaviour();
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Projectile"))
+        if (other.GetComponent<LaserProjectile>())
         {
             TakeDamage(LaserProjectile.damageAmount);
             meshRenderer.material = whiteMat;
@@ -50,22 +42,22 @@ public class Obstacle : MonoBehaviour
     }
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Beam"))
+        if (other.GetComponent<BeamProjectile>())
         {
             TakeDamage(BeamProjectile.damageAmount);
             meshRenderer.material = whiteMat;
         }
     }
-    void RandomSpeed()
+    private void RandomSpeed()
     {
         speed = Random.Range(10, 21);
     }
-    void RandomRotation()
+    private void RandomRotation()
     {
         Vector3[] rotationDir = new Vector3[] { Vector3.up, Vector3.forward, Vector3.right, Vector3.left, Vector3.back, Vector3.down };
         rotation = rotationDir[Random.Range(0, rotationDir.Length)];
     }
-    void Behaviour()
+    private void Behaviour()
     {
         obstacleRb.AddTorque(rotation * rotateSpeed);
         obstacleRb.AddForce(Vector3.back * speed);
@@ -74,7 +66,7 @@ public class Obstacle : MonoBehaviour
             obstacleRb.velocity = obstacleRb.velocity.normalized * speed;
         }
     }
-    public void TakeDamage(int amount)
+    private void TakeDamage(int amount)
     {
         hp -= amount;
         if (hp <= 0)
@@ -86,7 +78,7 @@ public class Obstacle : MonoBehaviour
             Invoke(nameof(ResetMat), .15f);
         }
     }
-    void ResetMat()
+    private void ResetMat()
     {
         meshRenderer.material = defaultMat;
     }
